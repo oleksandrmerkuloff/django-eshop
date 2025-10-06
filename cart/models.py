@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 
 import uuid
+from decimal import Decimal
 
 from store.models import Product
 
@@ -26,7 +27,7 @@ class Cart(models.Model):
 
     @property
     def total(self):
-        return sum(item.price * item.quantity for item in self.items.all())
+        return sum(Decimal(item.price) * item.quantity for item in self.items.all())
 
 
 class CartItem(models.Model):
@@ -39,7 +40,7 @@ class CartItem(models.Model):
         Product,
         on_delete=models.CASCADE,
     )
-    quantity = models.IntegerField(
+    quantity = models.PositiveIntegerField(
         default=1,
         validators=[
             MinValueValidator(1)
