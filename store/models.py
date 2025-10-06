@@ -20,7 +20,7 @@ class Category(models.Model):
         return self.name
 
     def __repr__(self) -> str:
-        amount_of_products = len(self.products.objects.all())  # type: ignore
+        amount_of_products = self.products.count()  # type: ignore
         return f'{self.name} includes {amount_of_products} products'
 
     class Meta:
@@ -120,3 +120,38 @@ class Review(models.Model):
         blank=True,
         null=True
         )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ('user', 'product')
+
+
+class Wishlist(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='wishlist'
+    )
+
+    def __str__(self) -> str:
+        return f'This wishlist owned by {self.user}'
+
+
+class WishlistItem(models.Model):
+    wishlist = models.ForeignKey(
+        Wishlist,
+        on_delete=models.CASCADE,
+        related_name='items'
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f'{self.product.name} in wishlist of {self.wishlist.user}'
+
+    class Meta:
+        ordering = ['-added_at']
