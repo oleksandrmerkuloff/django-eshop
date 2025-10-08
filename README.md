@@ -1,1 +1,3 @@
 # Internet Shop project
+
+# Stopped!!!
